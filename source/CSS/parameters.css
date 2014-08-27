@@ -1,0 +1,204 @@
+/* CSS properties for parameters*.mako */
+
+.historyItemBody {
+
+	display: none;
+}
+
+div.form-row {
+
+	padding: 5px 5px 5px 0px;
+}
+
+.editable-text {
+
+	border: solid transparent 1px;
+	padding: 3px;
+	margin: -4px;
+}
+
+/* Custom */
+
+.action_button:link {
+	text-decoration: none;
+}
+
+.action_button {
+
+	background-color: #e8e8e8;
+	-moz-border-radius: 15px;
+	-webkit-border-radius: 15px;
+	border-radius: 15px;
+	border: 1px solid #687065;
+	display: inline-block;
+	color: #000000;
+	font-family: Arial Black;
+	font-size: 12px;
+	font-weight: bold;
+	padding: 7px 27px;
+	
+}
+
+.action_button:active {
+	
+	position: relative;
+	top: 1px;
+}
+
+
+div.page_header {
+
+	font-weight: bold;
+	font-size: larger;
+	text-align: center;
+	border: 1px solid black;
+	height: 30px;
+	width: 50%;
+	background-color: rgb(223, 229, 249);
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	position: relative;
+	padding-top: 1em;
+	margin: auto;
+}
+
+div.show_or_hide{
+
+	margin: 5px;
+	float: right;
+}
+
+.history_info {
+
+	#~ text-decoration: underline;
+	font-weight: bold;
+	margin-left: 5px;
+	margin-bottom: 8px;
+}
+
+div.global_tool_block {
+
+	border: 1px solid black;
+	width: 98%;
+	background-color: #B0C4DE;
+	/*background-color: rgb(223, 229, 249);*/
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	margin: 5px auto 10px auto;
+}
+
+div.job_info {
+	
+	border: 1px solid black;
+	background-color: white;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	margin: 10px;
+}
+
+div.related_datasets {
+
+	border: 1px solid black;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	margin: 10px;
+}
+
+table.tooldata {
+	
+	width: 100%;
+	overflow: auto;
+	#~ table-layout: fixed;
+	
+	text-align: left;
+	margin: 8px 0px 10px 0px;
+}
+
+table.tooldata th {
+
+	text-align: center;
+	font-size: 120%;
+	border-bottom:1px solid gray;
+	padding-bottom: 10px
+}
+
+table.tooldata td {
+	
+	border-top:1px solid #ddd;
+	border-bottom:1px solid #ddd;
+	padding-left: 10px;
+}
+
+table.tooldata td.left {
+	
+	min-width: 15%;
+	font-weight: bold;
+}
+
+table.tooldata td.param_value {
+	
+	width: 50%;
+}
+
+table.tooldata tbody tr:hover td {
+
+	background-color: #eee;
+}
+
+.section_title {
+	
+	font-family: "Lucida Grande",verdana,arial,helvetica,sans-serif;
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+.legacy_table {
+	
+	margin: 10px;
+}
+
+/* Overwrite some global style with !important */
+.blank_line {
+	
+	height: 15px !important;
+}
+
+.blank_line:hover td {
+
+	background-color: white !important; # Overwrite a Galaxy style
+}
+
+
+/* Add properties to a Galaxy base.css class */
+.peek {
+
+	width: inherit !important;
+	padding: 10px;
+	border: 1px solid black;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+}
+
+
+/* CSS properties for command_lines.mako */
+
+.overauto {
+
+	overflow: auto;
+}
+
+.fixed_left {
+	
+	font-weight: bold;
+	min-width: 150px;
+}
+
+pre.with_pad {
+
+	padding: 0px 10px 0px 0px;
+}
