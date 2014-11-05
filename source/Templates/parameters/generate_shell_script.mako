@@ -52,25 +52,25 @@
 
 
                 if tool_list[First_dataset_identifier]:
-                        Brut_tool_name = tool_list[\
+                        Raw_tool_name = tool_list[\
                         First_dataset_identifier].name
                 else:
                         Unknown_counter = Unknown_counter + 1
-                        Brut_tool_name = "Unknown_Tool_" + \
+                        Raw_tool_name = "Unknown_Tool_" + \
                         str(Unknown_counter)
                 # Edit command line
-                Clean_tool_name = Brut_tool_name.replace(' ', '_')
+                Clean_tool_name = Raw_tool_name.replace(' ', '_')
                 Redirection = ' 1> ' + Clean_tool_name + \
                 '.stdout' + ' 2> ' + Clean_tool_name + '.stderr'
-                Brut_command = job_list[First_dataset_identifier].\
+                Raw_command = job_list[First_dataset_identifier].\
                 command_line
 
-                if Brut_command is not None:
-                        if "1>" in Brut_command:
-                                Command_no_redir = Brut_command.\
+                if Raw_command is not None:
+                        if "1>" in Raw_command:
+                                Command_no_redir = Raw_command.\
                                 partition('1>')[0]
                         else:
-                                Command_no_redir = Brut_command.\
+                                Command_no_redir = Raw_command.\
                                 partition('>')[0]
 
                         # custom edition for PopPhyl tools
@@ -88,13 +88,13 @@
                         replace("\t", '').split()) + Redirection
 
                         dataset_path = ""
-                        if Brut_tool_name != "Upload File":
+                        if Raw_tool_name != "Upload File":
                                 Tool_counter = Tool_counter + 1
                                 Workdir = str(Tool_counter) + '_' + \
                                 Clean_tool_name
 
                                 Bash_lines.append("# Tool name: " + \
-                                Brut_tool_name)
+                                Raw_tool_name)
                                 all_params = re.split(" ",Final_command_line)
                                 j = 0
                                 if len(Associated_datasets_by_job[jobs_ID]) > 0:

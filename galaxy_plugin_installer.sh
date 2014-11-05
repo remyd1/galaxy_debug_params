@@ -18,7 +18,7 @@ function help
 	
 	echo -e " -d directory => Absolute path to the galaxy-dist directory containing your galaxy instance (mandatory).\n";
     
-    echo -e "\n\n /!\ Use this installer only after you installed galaxy, not after an upgrade. If you upgrade galaxy, consider to re-apply this script or copy the files needed."
+    echo -e "\n\n /!\ Use this installer only after you installed galaxy, not after an upgrade. If you upgrade galaxy, please consider to re-apply this script or copy the files needed."
 
 	exit 0
 }

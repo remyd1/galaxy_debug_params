@@ -163,7 +163,7 @@ class ParametersController( BaseUIController, UsesHistoryMixin ):
         None if passed None or 'None'
         False otherwise
 
-        Note: string comparison is case-insensitive so lowecase versions of those
+        Note: string comparison is case-insensitive so lowercase versions of those
         function equivalently.
         """
 
