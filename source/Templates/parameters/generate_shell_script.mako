@@ -85,11 +85,11 @@
                                 Command_exec_mode = Command_no_redir
 
                         Final_command_line = " ".join(Command_exec_mode.\
-                        replace("\t", '').split()) + Redirection
+                        replace("\t",'').split())
 
                         dataset_path = ""
+                        Tool_counter = Tool_counter + 1
                         if Raw_tool_name != "Upload File":
-                                Tool_counter = Tool_counter + 1
                                 Workdir = str(Tool_counter) + '_' + \
                                 Clean_tool_name
 
@@ -105,12 +105,9 @@
                                                 "DATASET_NAME_"+str(j)+"='"+\
                                                 dataset[1].replace("'","\\'")+\
                                                 "'")
-                                                dataset_path="DATASET_"+\
-                                                "RESULT_PATH_"+str(j)+"=\""+\
-                                                dataset[2]+"\""
-                                                Final_command_line = \
-                                                Final_command_line.replace(\
-                                                dataset[2],"$DATASET_RESULT_PATH")
+                                                dataset_path="DATASET_RESULT_PATH_"+str(j)+"=\""+dataset[2]+"\""
+                                                #~ Final_command_line = Final_command_line.replace(dataset[2],"$DATASET_RESULT_PATH")
+                                                Final_command_line = Final_command_line.replace(dataset[2],"$DATASET_RESULT_PATH_"+str(j))
                                 for k, val in paths.iteritems():
                                         Final_command_line = Final_command_line.\
                                         replace(val,"$"+k)
@@ -127,9 +124,11 @@
                                 i = 0
                                 Final_command_line = Final_command_line.replace(\
                                 "'","\\'")
+                                #~ Final_command_line = Final_command_line.replace(\
+                                #~ '"','\\"')
                                 Final_command_line = Final_command_line.replace(\
                                 "/"+str(jobs_ID)+"/","/$JOB_ID/")
-                                for string in all_params:
+                                for k,string in enumerate(all_params):
                                         sub_string = string.split("=")
                                         for sub_str in sub_string:
                                                 if re.match(dataset_pattern,\
@@ -153,7 +152,19 @@
                                                         Final_command_line.\
                                                         replace(sub_str,\
                                                         "$DAT_PATH_"+str(i))
-                                Bash_lines.append(Final_command_line)
+                                        if k == 0:
+                                                string = string+" "
+                                                Final_command_line = \
+                                                Final_command_line.replace(string,"")
+                                                Interpreter = string
+                                        if k == 1:
+                                                string = string+" "
+                                                Final_command_line = \
+                                                Final_command_line.replace(string,"")
+                                                File2execute = string
+
+                                Bash_lines.append(Interpreter + File2execute + \
+                                Final_command_line + Redirection)
                                 Bash_lines.append('cd ..' + "\n")
 
         Bash_lines.append('cd ..' + "\n")
