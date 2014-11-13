@@ -1,7 +1,9 @@
 <%
-        from os import getenv
+
+        import os
         from galaxy import config
         from galaxy import model
+        import sys
 
         #~ from sqlalchemy.orm.collections import InstrumentedList
 
@@ -18,34 +20,42 @@
 
         dataset_pattern = re.compile('.+\.dat')
 
-        wdir = app.config.get('job_working_directory', conf.job_working_directory)
-        fpath = app.config.get('file_path', conf.file_path)
-        libdir = app.config.get('library_import_dir', conf.library_import_dir)
-        tdatapath = app.config.get('tool_data_path', conf.tool_data_path)
-        clfilespath= app.config.get('cluster_files_directory', conf.cluster_files_directory)
-        ftpdir = app.config.get('ftp_upload_dir', conf.ftp_upload_dir)
-        tpath = app.config.get('tool_path', conf.tool_path)
+        GALAXY_ROOT_DIR = os.getcwd()
 
-        paths = {'JOB_WORKING_DIR': wdir, \
-                'FILE_PATH': fpath, \
-                'LIB_IMPORT_DIR': libdir,\
-                'TOOL_DATA_PATH': tdatapath,\
-                'CL_FILES_DIR': clfilespath,\
-                'FTP_DIR': ftpdir,\
-                'TOOL_PATH': tpath }
+        JOB_WORKING_DIR = app.config.get('job_working_directory', conf.job_working_directory)
+        FILE_PATH = app.config.get('file_path', conf.file_path)
+        LIB_IMPORT_DIR = app.config.get('library_import_dir', conf.library_import_dir)
+        TOOL_DATA_PATH = app.config.get('tool_data_path', conf.tool_data_path)
+        CLUSTER_FILES_DIR= app.config.get('cluster_files_directory', conf.cluster_files_directory)
+        FTP_DIR = app.config.get('ftp_upload_dir', conf.ftp_upload_dir)
+        TOOL_PATH = app.config.get('tool_path', conf.tool_path)
+
+        # creating a list of list to get everything in the right order ( # dict) and that could be alterable
+        paths = [ ['GALAXY_ROOT_DIR', GALAXY_ROOT_DIR], ['JOB_WORKING_DIR', JOB_WORKING_DIR], ['FILE_PATH', FILE_PATH], \
+        ['LIB_IMPORT_DIR', LIB_IMPORT_DIR], ['TOOL_DATA_PATH', TOOL_DATA_PATH], ['CLUSTER_FILES_DIR', CLUSTER_FILES_DIR], \
+        ['FTP_DIR', FTP_DIR], ['TOOL_PATH', TOOL_PATH] ]
+
+        # deleting null values
+        paths = [[k, v] for k, v in paths if v]
+
         # Shebang and directory creation
         try:
-                shell = getenv('SHELL')
+                shell = os.getenv('SHELL')
         except:
                 shell = "/bin/bash"
+
         Bash_lines.append('#!' + shell + "\n")
+        Bash_lines.append("# Bash script generated with python " + sys.version[:5] + "\n")
         Bash_lines.append('mkdir ' + Clean_history_name)
         Bash_lines.append('cd ' + Clean_history_name + "\n")
 
+        for  k, val in enumerate(paths):
+                if val[0] != 'GALAXY_ROOT_DIR':
+                        # replacing the GALAXY_ROOT_DIR path in every other paths
+                        val[1] = val[1].replace(paths[0][1], "$GALAXY_ROOT_DIR")
+                        val[1] = val[1].replace("./", "$GALAXY_ROOT_DIR/")
+                Bash_lines.append(val[0] + '=' + '"' + val[1] + '"')
 
-        for k, val in paths.iteritems():
-                if val:
-                        Bash_lines.append(k+'=' + "'" + str(val) + "'")
         Bash_lines.append('\n')
 
         # Tool command lines
@@ -68,7 +78,7 @@
                 #~ 'pifc': job_list[First_dataset_identifier].get_prepare_input_files_cmd(),\
                 'info': job_list[First_dataset_identifier].get_info(),\
                 'output_metas': job_list[First_dataset_identifier].get_external_output_metadata(),\
-                'job': job_list[First_dataset_identifier].get_job(),\
+                #~ 'job': job_list[First_dataset_identifier].get_job(),\
                 'id': job_list[First_dataset_identifier].get_id(),\
                 'id_tag': job_list[First_dataset_identifier].get_id_tag(),\
                 'tasks': job_list[First_dataset_identifier].get_tasks(),\
@@ -95,7 +105,7 @@
                                                         #~ elif isinstance(my_galaxy_obj, model.JobParameter):
                                                                 #~ Bash_lines.append("#" + k + "("+str(i[0])+") name: " + my_galaxy_obj.name + " , value: " + my_galaxy_obj.value)
                                                 except AttributeError:
-                                                        Bash_lines.append("#" + k + ": is not a model item ("+str(prop)+")"+ str(type(prop)))
+                                                        Bash_lines.append("#" + k + ": is not a model object ("+str(prop)+")"+ str(type(prop)))
                                 else:
                                         Bash_lines.append("#" + k + ": " + str(prop))
                 Bash_lines.append("# End of properties")
@@ -104,7 +114,8 @@
                         #~ Bash_lines.append(type(tool_list[First_dataset_identifier]))
                         Raw_tool_name = tool_list[First_dataset_identifier].name
                         Interpreter = tool_list[First_dataset_identifier].interpreter
-                        Interpreter = Interpreter + " "
+                        if Interpreter:
+                                Interpreter = Interpreter + " "
                         inputs = tool_list[First_dataset_identifier].inputs
                         #~ Bash_lines.append(inputs)
                         #~ Bash_lines.append(Interpreter)
@@ -143,48 +154,44 @@
                                 if len(Associated_datasets_by_job[jobs_ID]) > 0:
                                         for dataset in Associated_datasets_by_job[jobs_ID]:
                                                 j = j+1
-                                                Bash_lines.append("DATASET_NAME_"+str(j)+"='"+dataset[1].replace("'","\\'")+"'")
-                                                dataset_path="DATASET_RESULT_PATH_"+str(j)+"=\""+dataset[2]+"\""
-                                                #~ Final_command_line = Final_command_line.replace(dataset[2],"$DATASET_RESULT_PATH")
-                                                Final_command_line = Final_command_line.replace(dataset[2],"$DATASET_RESULT_PATH_"+str(j))
-                                for k, val in paths.iteritems():
-                                        Final_command_line = Final_command_line.replace(str(val),"$"+k)
+                                                Bash_lines.append("DATASET_NAME_" + str(j) + "='" + dataset[1].replace("'","\\'") + "'")
+                                                dataset_path="DATASET_RESULT_PATH_" + str(j) + "=\"" + dataset[2] + "\""
+                                                #~ Final_command_line = Final_command_line.replace(dataset[2], "$DATASET_RESULT_PATH")
+                                                Final_command_line = Final_command_line.replace(dataset[2], "$DATASET_RESULT_PATH_" + str(j))
+                                for k, val in paths:
+                                        Final_command_line = Final_command_line.replace(val, "$" + k)
                                         if dataset_path != "":
-                                                dataset_path = dataset_path.replace(str(val),"$"+k)
-                                Bash_lines.append("JOB_ID='"+str(jobs_ID)+"'")
+                                                dataset_path = dataset_path.replace(val, "$" + k)
+                                Bash_lines.append("JOB_ID='" + str(jobs_ID) + "'")
                                 if dataset_path != "":
-                                        dataset_path = dataset_path.replace("/"+str(jobs_ID)+"/","/$JOB_ID/")
+                                        dataset_path = dataset_path.replace("/" + str(jobs_ID) + "/", "/$JOB_ID/")
                                         Bash_lines.append(dataset_path)
                                 Bash_lines.append('mkdir ' + Workdir)
                                 Bash_lines.append('cd ' + Workdir)
                                 i = 0
-                                Final_command_line = Final_command_line.replace("'","\\'")
-                                #~ Final_command_line = Final_command_line.replace('"','\\"')
-                                Final_command_line = Final_command_line.replace("/"+str(jobs_ID)+"/","/$JOB_ID/")
+                                Final_command_line = Final_command_line.replace("'", "\\'")
+                                #~ Final_command_line = Final_command_line.replace('"', '\\"')
+                                Final_command_line = Final_command_line.replace("/" + str(jobs_ID) + "/", "/$JOB_ID/")
                                 for k,string in enumerate(all_params):
                                         sub_string = string.split("=")
                                         for sub_str in sub_string:
                                                 if re.match(dataset_pattern, sub_str):
                                                         i = i+1
-                                                        sub_str = sub_str.replace("'","\\'")
-                                                        sub_str = sub_str.replace('"',"")
-                                                        sub_str = sub_str.replace("/"+str(jobs_ID)+"/","/$JOB_ID/")
-                                                        for k, val in paths.iteritems():
-                                                                sub_str = sub_str.replace(str(val),"$"+k)
-                                                        Bash_lines.append("DAT_PATH_"+str(i)+"=\""+sub_str+"\"")
-                                                        Final_command_line = Final_command_line.replace(sub_str,"$DAT_PATH_"+str(i))
-                                        if k == 0:
+                                                        sub_str = sub_str.replace("'", "\\'")
+                                                        sub_str = sub_str.replace('"', "")
+                                                        sub_str = sub_str.replace("/" + str(jobs_ID) + "/", "/$JOB_ID/")
+                                                        for k, val in paths:
+                                                                sub_str = sub_str.replace(val, "$" + k)
+                                                        Bash_lines.append("DAT_PATH_" + str(i) + "=\"" + sub_str + "\"")
+                                                        Final_command_line = Final_command_line.replace(sub_str, "$DAT_PATH_" + str(i))
+                                        if k == 0 and Interpreter is None:
                                                 string = string+" "
                                                 Interpreter = string
-                                        if k == 1:
-                                                string = string+" "
-                                                Final_command_line = Final_command_line.replace(string,"")
-                                                File2execute = string
 
                                 if Interpreter:
                                         Final_command_line = Final_command_line.replace(Interpreter,"")
 
-                                Bash_lines.append(Interpreter + File2execute + Final_command_line + Redirection)
+                                Bash_lines.append(Interpreter + Final_command_line + Redirection)
                                 Bash_lines.append('cd ..' + "\n")
 
         Bash_lines.append('cd ..' + "\n")
