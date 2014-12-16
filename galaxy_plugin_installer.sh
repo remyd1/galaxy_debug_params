@@ -26,7 +26,7 @@ function help
 function check
 {
 	if [[ ! -e $1 ]]; then
-		echo -e "Error: file/directory $1 does not exists ! Installation aborted...\n"
+		echo -e "Error: file/directory $1 does not exists ! Check permissions. Installation aborted...\n"
 		exit
 	fi
 	
@@ -106,6 +106,17 @@ else
 		echo -e " -> Copy of the custom galaxy.menu.js in directory ${js_dir}/"
 		cp Menu/static/scripts/galaxy.menu.js ${js_dir}/galaxy.menu.js
 		check ${js_dir}/galaxy.menu.js
+
+        java=`which java`
+        python=`which python`
+        if [[ $java == "" ]]; then 
+            echo "No java present; copying compressed version.";
+            cp ${js_dir}/packed/galaxy.menu.js ${js_dir}/packed/${js_menu_backup}
+            cp Menu/static/scripts/packed_galaxy.menu.js ${js_dir}/packed/galaxy.menu.js
+        else 
+            echo "java is present. compressing js files with yuicompressor.";
+            cd ${js_dir} && $python pack_scripts.py && cd -
+        fi
 		
 		echo -e "\n  --> Installation complete !\n"
 		
