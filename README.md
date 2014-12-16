@@ -15,8 +15,10 @@ To install it, just run:
 
 
 ```bash
-$ bash galaxy_plugin_installer.sh -d /path/to/galaxy-dir
+$ bash galaxy_plugin_installer.sh -d /full/path/to/galaxy-dir
 ```
+
+Then restart or reload galaxy
 
 
 [1]: http://www.isem.univ-montp2.fr
